@@ -8,14 +8,17 @@ import com.seyeong.databaseexample.databinding.ActivityMainBinding
 import com.seyeong.databaseexample.databinding.ActivityMainBinding.inflate
 
 class MainActivity : AppCompatActivity() {
+
     val binding by lazy { ActivityMainBinding.inflate(layoutInflater) }
     val helper = SqliteHelper(this, "memo", 1)
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(binding.root)
 
         val adapter = RecyclerAdapter()
+        adapter.helper = helper
         adapter.listDate.addAll(helper.selectMemo()) // addAll?. adapter의 listDate에 데이터베이스에서 가져온 데이터를 세팅합니다.
 
         binding.recyclerMemo.adapter = adapter // 레이아웃.xml의 리사이클러뷰 위젯에 adapter를 연결하고 레이아웃 매니저를 설정한다.
@@ -27,6 +30,9 @@ class MainActivity : AppCompatActivity() {
 
                 helper.insertMemo(memo) // helper 클래스의 insertMemo() 메서드에 앞에서 생성한 memo를 전달해 데이터베이스에 저장합니다.
                 adapter.listDate.clear() // 어댑터의 데이터를 모두 초기화합니다.
+
+                adapter.listDate.addAll(helper.selectMemo()) // 리사이클러뷰에 select로 조회한 값들을 추가한다.
+                adapter.notifyDataSetChanged() // 리사이클러뷰 수정
 
                 binding.editMemo.setText("") // EditText의 값을 초기화합니다.
             }
